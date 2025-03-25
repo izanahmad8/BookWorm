@@ -8,7 +8,7 @@ import bookRouter from "./routes/bookRoutes.js";
 const app = express();
 
 //middlewares
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 
 //database connection
