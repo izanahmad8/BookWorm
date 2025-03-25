@@ -21,7 +21,7 @@ export default function Home() {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}books/getbook?page=${pageNum}&limit=5`,
+        `${process.env.EXPO_PUBLIC_API_URL}books/getbook?page=${pageNum}&limit=2`,
         {
           method: "GET",
           headers: {
@@ -32,12 +32,18 @@ export default function Home() {
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Something went wrong");
+
       setBooks((prevBooks) => {
-        const newBooks =
-          pageNum === 1 ? data.books : [...prevBooks, ...data.books];
-        return Array.from(
-          new Map(newBooks.map((book) => [book._id, book])).values()
+        const combinedBooks =
+          refresh || pageNum === 1 ? data.books : [...prevBooks, ...data.books];
+
+        const uniqueBooks = Array.from(
+          new Map(
+            combinedBooks.map((book) => [book._id.toString(), book])
+          ).values()
         );
+
+        return uniqueBooks;
       });
       setHasMore(pageNum < data.totalPages);
       setPage(pageNum);
@@ -52,7 +58,11 @@ export default function Home() {
     fetchBooks();
   }, []);
 
-  const handleLoadMore = async () => {};
+  const handleLoadMore = async () => {
+    if (hasMore && !loading && !refreshing) {
+      await fetchBooks(page + 1);
+    }
+  };
 
   const renderRatingPicker = (rating) => {
     const stars = [];
@@ -110,6 +120,29 @@ export default function Home() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.1}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>BookWorm🐛</Text>
+            <Text style={styles.headerSubtitle}>
+              Discover great reads from the community👇
+            </Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons
+              name="book-outline"
+              size={60}
+              color={COLORS.textSecondary}
+            />
+            <Text style={styles.emptyText}>No recommendations yet</Text>
+            <Text style={styles.emptySubtext}>
+              Be the first to share a book!
+            </Text>
+          </View>
+        }
       />
     </View>
   );

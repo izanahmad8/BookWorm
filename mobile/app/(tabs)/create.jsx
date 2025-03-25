@@ -101,7 +101,7 @@ export default function Create() {
         ? `image/${fileType.toLowerCase()}`
         : "image/jpeg";
       const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
-      console.log(process.env.EXPO_PUBLIC_API_URL);
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}books/upload`,
         {
