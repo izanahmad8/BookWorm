@@ -74,8 +74,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     padding: 12,
-    height: 100,
+    height: 120,
     color: COLORS.textDark,
+    textAlignVertical: "top",
   },
   ratingContainer: {
     flexDirection: "row",

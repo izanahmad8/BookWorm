@@ -13,18 +13,26 @@ import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import Toast from "react-native-simple-toast";
 
 export default function Signup() {
   const router = useRouter();
-  const { user, isLoading, register } = useAuthStore();
+  const { user, isLoading, register, token } = useAuthStore();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async () => {
-    await register(username, email, password);
+    const result = await register(username, email, password);
+    if (!result.success) {
+      Toast.show(result.error, Toast.SHORT);
+    }
+    if (result.success) {
+      Toast.show("Signup successful", Toast.SHORT);
+    }
   };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

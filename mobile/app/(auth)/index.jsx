@@ -13,14 +13,24 @@ import { useState } from "react";
 import styles from "../../assets/styles/login.styles";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
+import { useAuthStore } from "../../store/authStore";
+import Toast from "react-native-simple-toast";
 
 export default function Login() {
+  const { login, isLoading } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {};
+  const handleLogin = async () => {
+    const result = await login(email, password);
+    if (!result.success) {
+      Toast.show(result.error, Toast.SHORT);
+    }
+    if (result.success) {
+      Toast.show("Login successful", Toast.SHORT);
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
