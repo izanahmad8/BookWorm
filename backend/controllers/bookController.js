@@ -35,7 +35,7 @@ const uploadBook = async (req, res) => {
 
 const getBooks = async (req, res) => {
   const page = req.query.page || 1;
-  const limit = req.query.limit || 2;
+  const limit = req.query.limit || 5;
   const skip = (page - 1) * limit;
   try {
     const books = await bookModel

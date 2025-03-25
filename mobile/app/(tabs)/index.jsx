@@ -1,4 +1,10 @@
-import { View, FlatList, Text } from "react-native";
+import {
+  View,
+  FlatList,
+  Text,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
@@ -7,6 +13,7 @@ import Toast from "react-native-simple-toast";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { formatPublishDate } from "../../lib/utils";
+import Loader from "../../components/Loader";
 
 export default function Home() {
   const { token } = useAuthStore();
@@ -21,7 +28,7 @@ export default function Home() {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}books/getbook?page=${pageNum}&limit=2`,
+        `${process.env.EXPO_PUBLIC_API_URL}books/getbook?page=${pageNum}&limit=5`,
         {
           method: "GET",
           headers: {
@@ -112,6 +119,10 @@ export default function Home() {
     </View>
   );
 
+  if (loading) {
+    return <Loader size="large" />;
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -120,6 +131,14 @@ export default function Home() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchBooks(1, true)}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
         ListHeaderComponent={
@@ -129,6 +148,15 @@ export default function Home() {
               Discover great reads from the community👇
             </Text>
           </View>
+        }
+        ListFooterComponent={
+          hasMore && books.length > 0 ? (
+            <ActivityIndicator
+              style={styles.footerLoader}
+              size="small"
+              color={COLORS.primary}
+            />
+          ) : null
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
