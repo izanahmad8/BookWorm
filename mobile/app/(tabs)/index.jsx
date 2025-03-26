@@ -61,6 +61,7 @@ export default function Home() {
       else setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchBooks();
   }, []);
