@@ -17,7 +17,7 @@ import Toast from "react-native-simple-toast";
 
 export default function Signup() {
   const router = useRouter();
-  const { user, isLoading, register, token } = useAuthStore();
+  const { isLoading, register } = useAuthStore();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
